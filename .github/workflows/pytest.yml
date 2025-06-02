@@ -62,7 +62,7 @@ jobs:
           pip install .[test]
           rm -rf src
           curl -L -o invoice_100.pdf "https://github.com/katanaml/sparrow-donut/raw/main/sparrow-data/docs/input/invoices/Dataset%20with%20valid%20information/invoice_100.pdf"
-          python -m coverage run --source=papyrus -m pytest
+          python -m coverage run --source=papyrus -m pytest -v
           python -m coverage report
           python -m coverage json
 
