@@ -15,10 +15,6 @@ from papyrus.engine.extractor import (
     PDFPlumberExtractor,
     PyMuPDFExtractor,
     PyPDF2Extractor,
-    EasyOCRExtractor,
-    TesseractOCRExtractor,
-    HuggingFaceOCRExtractor,
-    BaseExtractor,
 )
 
 __all__ = [
@@ -27,8 +23,4 @@ __all__ = [
     "PDFPlumberExtractor",
     "PyMuPDFExtractor",
     "PyPDF2Extractor",
-    "TesseractOCRExtractor",
-    "EasyOCRExtractor",
-    "HuggingFaceOCRExtractor",
-    "BaseExtractor",
 ]
