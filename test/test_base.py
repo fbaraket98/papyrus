@@ -30,9 +30,9 @@ path = "./papyrus/data_pdf/invoice_100.pdf"
 )
 
 def test_extractor_method(extractor, extractor_name, method_name, expected_capability):
-    config = {"extractor": extractor_name}
+    
 
-    papyrus_extractor = PapyrusExtractor(config_dict=config)
+    papyrus_extractor = PapyrusExtractor(extractor=extractor_name)
 
     capabilities = getattr(extractor, "capabilities", set())
 
@@ -49,3 +49,64 @@ def test_extractor_method(extractor, extractor_name, method_name, expected_capab
             method(path)
 
 
+
+@pytest.mark.parametrize(
+    "extractor_name",
+    [
+        ("pdfplumber"),
+        ("docling"),
+        ("pymupdf"),
+        ("pypdf2"),
+    ],
+)
+def run_extractor_content_text_only(extractor_name):
+    """
+    Test extraction "text" only
+    At default, it must contain all texts found 
+
+    """
+    papyrus_extractor = PapyrusExtractor(extractor=extractor_name)
+    text = papyrus_extractor.get_text(path)
+    assert isinstance(text, str), "text must be typed as str"
+
+
+
+@pytest.mark.parametrize(
+    "extractor_name",
+    [
+        ("pdfplumber"),
+        ("docling"),
+        ("pymupdf"),
+        ("camelot"),
+    ],
+)
+
+def run_extractor_content_tables_only(extractor_name):
+    """
+    Test extraction "tables" only
+    At default, it must contain all tables found
+
+    """
+    papyrus_extractor = PapyrusExtractor(extractor=extractor_name)
+    tables = papyrus_extractor.get_tables(path)
+    assert isinstance(tables, list), "tables must be typed as list"
+
+
+@pytest.mark.parametrize(
+    "extractor_name",
+    [
+        ("pdfplumber"),
+        ("docling"),
+        ("pymupdf"),
+        ("pypdf2"),
+    ],
+)
+def run_extractor_content_all(extractor_name):
+    """
+    Test extraction "all" 
+    At default, it must contain all texts and tables found 
+
+    """
+    papyrus_extractor = PapyrusExtractor(extractor=extractor_name)
+    text = papyrus_extractor.get_all(path)
+    assert isinstance(text, str), "text must be typed as str"

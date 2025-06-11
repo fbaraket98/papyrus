@@ -253,7 +253,9 @@ class CamelotExtractor(BaseExtractor):
         except ImportError:
             raise ImportError("'camelot' is not installed. Run `pip install camelot`")
 
-        tables = camelot.read_pdf(path, pages="all", flavor="stream")
+        tables_out = camelot.read_pdf(path, pages="all", flavor="stream")
+        tables = [table.df for table in tables_out if not table.df.empty]
+
         return tables
 
     def get_text(self, path: str, **kwargs):
@@ -261,130 +263,4 @@ class CamelotExtractor(BaseExtractor):
 
     def get_all(self, path: str):
         pass
-
-
-# class EasyOCRExtractor(BaseExtractor):
-#     """
-#     Extracts OCR text using the easyocr library.
-#     """
-
-#     def __init__(self, model: Optional[str] = "en"):
-#         self.model = model
-#         super().__init__()
-#         self.capabilities = {"text_ocr"}
-
-#     def _run_impl(self, file: "papyrus.File") -> None:
-#         try:
-#             import easyocr
-#         except ImportError:
-#             raise ImportError("'easyocr' is not installed. Run `pip install easyocr`")
-
-#         if not os.path.exists(file.path):
-#             raise FileNotFoundError(f"File not found: {file.path}")
-
-#         reader = easyocr.Reader([self.model])
-#         results = reader.readtext(file.path, detail=0)
-
-#         file.pages[1]["text"] = "\n".join(results).strip()
-
-
-# class TesseractOCRExtractor(BaseExtractor):
-#     """
-#     Extracts OCR text using the Tesseract library.
-#     """
-
-#     def __init__(self, capabilities=set()):
-#         super().__init__()
-#         self.capabilities = {"text_ocr"}
-
-#     def _run_impl(self, file: "papyrus.File") -> None:
-#         try:
-#             import pytesseract
-#             from PIL import Image
-#         except ImportError:
-#             raise ImportError(
-#                 "'pytesseract' or 'Pillow' is not installed. Run `pip install pytesseract Pillow`"
-#             )
-
-#         if not os.path.exists(file.path):
-#             raise FileNotFoundError(f"File not found: {file.path}")
-
-#         image = Image.open(file.path)
-#         ocr_text = pytesseract.image_to_string(image)
-#         file.pages[1]["text"] = ocr_text.strip()
-
-
-# class HuggingFaceOCRExtractor(BaseExtractor):
-#     """
-#     Extracts OCR text using a Hugging Face model (e.g., TroCR).
-#     """
-
-#     def __init__(
-#         self, model_name: str = "microsoft/trocr-base-printed", use_cuda: bool = False
-#     ):
-#         self.model_name = model_name
-#         self.use_cuda = use_cuda
-#         super().__init__()
-#         self.capabilities = {"text_ocr"}
-#         try:
-#             import torch
-#             from transformers import (
-#                 AutoProcessor,
-#                 AutoModelForVision2Seq,
-#                 BitsAndBytesConfig,
-#             )
-#         except ImportError:
-#             raise ImportError(
-#                 "Missing required packages. Run `pip install torch transformers bitsandbytes`"
-#             )
-
-#         quant_config = BitsAndBytesConfig(load_in_8bit=True)
-#         self.tokenizer = AutoProcessor.from_pretrained(model_name)
-#         self.model = AutoModelForVision2Seq.from_pretrained(
-#             model_name, quantization_config=quant_config
-#         )
-#         self.device = torch.device(
-#             "cuda" if use_cuda and torch.cuda.is_available() else "cpu"
-#         )
-#         self.model.to(self.device)
-
-#     def _run_impl(self, file: "papyrus.File") -> None:
-#         if not os.path.exists(file.path):
-#             raise FileNotFoundError(f"File not found: {file.path}")
-
-#         try:
-#             import torch
-#             from pdf2image import convert_from_path
-#         except ImportError:
-#             raise ImportError("Missing dependencies. Run `pip install torch pdf2image`")
-
-#         images = convert_from_path(file.path)
-
-#         messages = [
-#             {
-#                 "role": "user",
-#                 "content": [{"type": "text", "text": "Describe this image."}],
-#             }
-#         ]
-#         text_prompt = self.tokenizer.apply_chat_template(
-#             messages, tokenize=False, add_generation_prompt=True
-#         )
-
-#         for page_number, image in enumerate(images, start=1):
-#             try:
-#                 image = image.convert("RGB")
-#                 inputs = self.tokenizer(
-#                     text=[text_prompt], images=image, return_tensors="pt"
-#                 )
-#                 inputs = {k: v.to(self.device) for k, v in inputs.items()}
-
-#                 with torch.no_grad():
-#                     outputs = self.model.generate(**inputs)
-
-#                 decoded = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-#                 file.pages[page_number]["ocr_text"] = decoded.strip()
-
-#             except ValueError as e:
-#                 print(f"Skipping page {page_number}: {e}")
-
 

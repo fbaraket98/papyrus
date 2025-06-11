@@ -11,7 +11,7 @@
 
 from typing import List
 
-from papyrus.config.config import load_config
+from papyrus.config.config import check_config
 from papyrus.engine.extractor import (
     DoclingExtractor,
     PDFPlumberExtractor,
@@ -45,14 +45,6 @@ class ExtractorFactory:
             extractor = PyPDF2Extractor()
         elif model == "camelot":
             extractor = CamelotExtractor()
-        # elif model == "easyocr":
-        #     extractor = EasyOCRExtractor()  
-        # elif model == "tesseract":
-        #     extractor = TesseractOCRExtractor() 
-        # elif model == "docling-tables":
-        #     extractor = TableExtractorDocling()
-        # elif model == "huggingface-ocr":
-        #     extractor = HuggingFaceOCRExtractor()
         
         check_capabilities(extractor, capabilities)
 
@@ -70,137 +62,19 @@ extractorfactory = ExtractorFactory()
 
 
 class PapyrusExtractor:
-    def __init__(self, config_path=None, config_dict=None):
-        self.config = load_config(config_path, config_dict)
+    def __init__(self, extractor=None):
+        self.extractor = extractor
+        check_config(extractor)
         self.extractor_factory = extractorfactory
 
     def get_text(self, path, format = "raw"):
-        extractor = self.extractor_factory.get_processor(self.config.get("extractor"), capabilities = ['text'])
+        extractor = self.extractor_factory.get_processor(self.extractor, capabilities = ['text'])
         return extractor.get_text(path, format=format)
 
     def get_tables(self, path):
-        extractor = self.extractor_factory.get_processor(self.config.get("extractor"), capabilities = ['tables'])
+        extractor = self.extractor_factory.get_processor(self.extractor, capabilities = ['tables'])
         return extractor.get_tables(path)
         
     def get_all(self, path):
-        extractor = self.extractor_factory.get_processor(self.config.get("extractor"), capabilities = ["text", "tables"])
+        extractor = self.extractor_factory.get_processor(self.extractor, capabilities = ["text", "tables"])
         return extractor.get_tables(path)
-
-    # @property
-    # def tables(self):
-    #     tables: list = []
-    #     for page in self.pages.values():
-    #         tables.extend(page.get("tables", []))
-    #     return tables
-
-    # def __text_by_format(self, format=""):
-    #     text: str = ""
-    #     for page in self.pages.values():
-    #         text += page.get("text" + format, page.get("text", ""))
-    #     return text
-
-    # @property
-    # def text(self, format=""):
-    #     return self.__text_by_format()
-
-    # @property
-    # def text_markdown(self, format="") -> str:
-    #     return self.__text_by_format(format="_md")
-
-    # def _export_text(self, format):
-    #     parts = []
-    #     for p in sorted(self.pages.keys()):
-    #         page = self.pages[p]
-    #         if format == "md" and page.get("text_md"):
-    #             parts.append(page["text_md"].strip())
-    #         else:
-    #             parts.append(page["text"].strip())
-    #     return "\n\n".join(parts)
-
-    # def _export_tables(self):
-    #     parts = []
-    #     for p in sorted(self.pages.keys()):
-    #         page = self.pages[p]
-    #         for i, df in enumerate(page["tables"]):
-    #             parts.append(f"<!-- Page {p} - Table {i+1} -->")
-    #             parts.append(df.to_markdown(index=False))
-    #             parts.append("")
-    #     return "\n\n".join(parts)
-
-    # def _export_both(self):
-
-    #     parts = []
-    #     for p in sorted(self.pages.keys()):
-    #         page = self.pages[p]
-    #         text_content = page["text"].strip()
-    #         if text_content:
-    #             parts.append(text_content)
-    #         for i, df in enumerate(page["tables"]):
-    #             parts.append(f"<!-- Page {p} - Table {i+1} -->")
-    #             parts.append(df.to_markdown(index=False))
-    #         parts.append("")
-    #     return "\n\n".join(parts)
-
-    # def export(self, format="text", content="text"):
-
-    #     assert format in {"text", "md"}, "format must be 'text' or 'md'"
-    #     assert content in {
-    #         "text",
-    #         "tables",
-    #         "both",
-    #     }, "content must be 'text', 'tables', or 'both'"
-
-    #     if content == "text":
-    #         return self._export_text(format)
-    #     elif content == "tables":
-    #         return self._export_tables()
-    #     elif content == "both":
-    #         return self._export_both()
-
-    # def extract(self, extractor: "extractor.BaseExtractor", content="text"):
-    #     ExtractorFactory().get_processor(self, content, extractor)
-
-    # def _extract_tables(self, extractor: "extractor.BaseExtractor"):
-    #     for page_number in self.pages:
-    #         self.pages[page_number]["tables"] = []
-    #     previous_file = copy.deepcopy(self)
-    #     extractor.run(self)
-    #     for page_number in self.pages:
-    #         if page_number in previous_file.pages:
-    #             self.pages[page_number]["text"] = copy.deepcopy(
-    #                 previous_file.pages[page_number].get("text", "")
-    #             )
-    #             self.pages[page_number]["text_md"] = copy.deepcopy(
-    #                 previous_file.pages[page_number].get("text_md", "")
-    #             )
-    #         else:
-    #             self.pages[page_number]["text"] = ""
-    #             self.pages[page_number]["text_md"] = ""
-
-    #     return self
-
-    # def _extract_text(self, extractor: "extractor.BaseExtractor"):
-    #     for page_number in self.pages:
-    #         self.pages[page_number]["text"] = ""
-    #         self.pages[page_number]["text_md"] = ""
-    #     previous_file = copy.deepcopy(self)
-    #     extractor.run(self)
-    #     for page_number in self.pages:
-    #         if page_number in previous_file.pages:
-    #             self.pages[page_number]["tables"] = copy.deepcopy(
-    #                 previous_file.pages[page_number].get("tables", [])
-    #             )
-    #         else:
-    #             self.pages[page_number]["tables"] = []
-
-    #     return self
-
-    # def _extract_all(self, extractor: "extractor.BaseExtractor"):
-    #     extractor.run(self)
-    #     return self
-
-    # def show_capabilities(self, extractor: "extractor.BaseExtractor"):
-    #     caps = getattr(extractor, "capabilities", set())
-    #     print(
-    #         f"{extractor.__class__.__name__} supports: {', '.join(caps) or 'nothing'}"
-    #     )
