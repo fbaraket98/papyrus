@@ -12,7 +12,7 @@ from papyrus.engine import (
     CamelotExtractor,
 )
 
-path = "./papyrus/data_pdf/invoice_100.pdf"
+path = "./papyrus/test/invoice_100.pdf"
 
 @pytest.mark.parametrize(
     "extractor, extractor_name, method_name, expected_capability",
