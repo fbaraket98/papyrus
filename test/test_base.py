@@ -1,8 +1,5 @@
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 import pytest
+
 from papyrus.core.papyrus_extractor import PapyrusExtractor
 from papyrus.engine import (
     PDFPlumberExtractor,
@@ -14,24 +11,22 @@ from papyrus.engine import (
 
 path = "invoice_100.pdf"
 
+
 @pytest.mark.parametrize(
     "extractor, extractor_name, method_name, expected_capability",
     [
         (PDFPlumberExtractor(), "pdfplumber", "get_text", "text"),
         (PDFPlumberExtractor(), "pdfplumber", "get_tables", "tables"),
         (DoclingExtractor(), "docling", "get_text", "text"),
-        (DoclingExtractor(), "docling","get_tables", "tables"),
-        (PyMuPDFExtractor(), "pymupdf","get_text", "text"),
+        (DoclingExtractor(), "docling", "get_tables", "tables"),
+        (PyMuPDFExtractor(), "pymupdf", "get_text", "text"),
         (PyMuPDFExtractor(), "pymupdf", "get_tables", "tables"),
-        (PyPDF2Extractor(), "pypdf2" ,"get_text", "text"),
-        (CamelotExtractor(), "camelot", "get_text", "text"),     
+        (PyPDF2Extractor(), "pypdf2", "get_text", "text"),
+        (CamelotExtractor(), "camelot", "get_text", "text"),
         (CamelotExtractor(), "camelot", "get_tables", "tables"),
     ],
 )
-
 def test_extractor_method(extractor, extractor_name, method_name, expected_capability):
-    
-
     papyrus_extractor = PapyrusExtractor(extractor=extractor_name)
 
     capabilities = getattr(extractor, "capabilities", set())
@@ -47,7 +42,6 @@ def test_extractor_method(extractor, extractor_name, method_name, expected_capab
         with pytest.raises(Exception):
             method = getattr(papyrus_extractor, method_name)
             method(path)
-
 
 
 @pytest.mark.parametrize(
@@ -70,7 +64,6 @@ def run_extractor_content_text_only(extractor_name):
     assert isinstance(text, str), "text must be typed as str"
 
 
-
 @pytest.mark.parametrize(
     "extractor_name",
     [
@@ -80,7 +73,6 @@ def run_extractor_content_text_only(extractor_name):
         ("camelot"),
     ],
 )
-
 def run_extractor_content_tables_only(extractor_name):
     """
     Test extraction "tables" only
