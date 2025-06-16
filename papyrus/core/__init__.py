@@ -9,6 +9,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from papyrus.core.file import File
+from papyrus.core.papyrus_extractor import PapyrusExtractor
 
-__all__ = ["File"]
+__all__ = ["PapyrusExtractor"]
