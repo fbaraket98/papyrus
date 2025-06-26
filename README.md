@@ -26,10 +26,7 @@ python -m pip install https://github.com/eurobios-mews-labs/papyrus.git
 | Docling                 |        X        |              X |
 | PyMuPDFExtractor        |        X        |                |
 | PyPDF2Extractor         |        X        |                |
-| EasyOCRExtractor        |                 |                |
-| TesseractOCRExtractor   |                 |                |
-| HuggingFaceOCRExtractor |                 |                |
-| CamelotExtractor        |                 |                |
+| CamelotExtractor        |        X        |              X |
   
 2. Depending on the extractor chosen you can extract only text or only table or both.
 
@@ -53,3 +50,13 @@ print(file.tables)
 file.extract(content="all", extractor=pdf_plumber)
 ````
 
+## Contributing
+
+You are very welcome to contribute to the project, by requesting features,
+pointing out new tools that can be added as component, by identifying issues and creating new features. 
+Development guidelines will be detailed in near future.
+
+* Fork the repository
+* Clone your forked repository ```git clone https://github.com/$USER/papyrus.git```
+* Test using pytest ````pip install pytest; pytest tests/````
+* Submit you work with a pull request.
