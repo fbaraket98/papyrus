@@ -26,7 +26,7 @@ python -m pip install https://github.com/eurobios-mews-labs/papyrus.git
 | Docling                 |        X        |              X |
 | PyMuPDFExtractor        |        X        |                |
 | PyPDF2Extractor         |        X        |                |
-| CamelotExtractor        |        X        |              X |
+| CamelotExtractor        |                 |              X |
   
 2. Depending on the extractor chosen you can extract only text or only table or both.
 
