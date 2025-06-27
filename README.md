@@ -14,10 +14,7 @@ python -m pip install https://github.com/eurobios-mews-labs/papyrus.git
 - engine.PDFPlumberExtractor()
 - engine.DoclingExtractor()
 - engine.PyMuPDFExtractor()
-- engine.PyPDF2Extractor() 
-- engine.EasyOCRExtractor()
-- engine.TesseractOCRExtractor() 
-- engine.HuggingFaceOCRExtractor() 
+- engine.PyPDF2Extractor()
 - engine.CamelotExtractor()
 
 | Extractor               | extracting text | extract tables |
@@ -29,25 +26,23 @@ python -m pip install https://github.com/eurobios-mews-labs/papyrus.git
 | CamelotExtractor        |                 |              X |
   
 2. Depending on the extractor chosen you can extract only text or only table or both.
+The available extractors are [pdfplumber, pymupdf, pypdf2, camelot, docling]
 
 ````python
-from papyrus import engine
-from papyrus.core import File
+from papyrus.core import PapyrusExtractor
 
 file_path = "invoice_100.pdf"
-#Choose the pdf_plumber extractor 
-pdf_plumber = engine.PDFPlumberExtractor()
-# instanciate File with the file_path 
-file = File(file_path)
+# instanciate PapyrusExtractor with a name of pdf plumber extractor 
+papyrus = PapyrusExtractor("pdfplumber")
 #extract only text
-file.extract(content="text", extractor=pdf_plumber)
+text = papyrus.get_text(file_path)
 #print the result
-print(file.text)
+print(text)
 #extract only tables
-file.extract(content="tables",extractor=pdf_plumber)
-print(file.tables)
+tables = papyrus.get_tables(file_path)
+print(tables)
 #extract both text and tables
-file.extract(content="all", extractor=pdf_plumber)
+text_tables = papyrus.get_all(file_path)
 ````
 
 ## Contributing
