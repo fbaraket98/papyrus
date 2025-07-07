@@ -32,7 +32,7 @@ The available extractors are [pdfplumber, pymupdf, pypdf2, camelot, docling]
 from papyrus.core import PapyrusExtractor
 
 file_path = "invoice_100.pdf"
-# instanciate PapyrusExtractor with a name of pdf plumber extractor 
+# instanciate PapyrusExtractor with a name of pdf plumber extractor from the list of available extractors
 papyrus = PapyrusExtractor("pdfplumber")
 #extract only text
 text = papyrus.get_text(file_path)

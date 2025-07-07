@@ -27,6 +27,7 @@ path = "invoice_100.pdf"
     ],
 )
 def test_extractor_method(extractor, extractor_name, method_name, expected_capability):
+    print(f"{extractor_name}==" )
     papyrus_extractor = PapyrusExtractor(extractor=extractor_name)
 
     capabilities = getattr(extractor, "capabilities", set())
