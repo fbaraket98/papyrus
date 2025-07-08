@@ -1,4 +1,3 @@
-from sympy import content
 
 # papyrus
 This library aims at extracting text and tables from pdf.
@@ -55,3 +54,9 @@ Development guidelines will be detailed in near future.
 * Clone your forked repository ```git clone https://github.com/$USER/papyrus.git```
 * Test using pytest ````pip install pytest; pytest tests/````
 * Submit you work with a pull request.
+
+## Authors
+
+Eurobios Mews Labs
+
+<img src=".static/logoEurobiosMewsLabs.png" width="150"/>
