@@ -1,3 +1,4 @@
+<img src=".static/papyrus-logo.png" width="150"/>
 
 # papyrus
 This library aims at extracting text and tables from pdf.
