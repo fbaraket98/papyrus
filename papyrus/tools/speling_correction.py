@@ -4,12 +4,12 @@ import Levenshtein
 
 
 
-def load_df_spellcheck():
+def load_df_spellcheck()->pd.DataFrame:
     """
     Loads the dataframe used to make the spelling correction, and sort the entries by
     number of usage according to Google statistics, from highest to lowest.
     """
-    df = pd.read_csv( "./words_dict/linux_dict_cleaned.csv")
+    df = pd.read_csv( "./papyrus/tools/words_dict/linux_dict_cleaned.csv")
     df["length"] = df["word"].str.len()
     df = df.sort_values(by=["length", "count"], ascending=[True, False]).reset_index(drop=True)
     return df
@@ -99,13 +99,13 @@ def words_correction(text: str, use_hamming: bool = False) -> str:
     # transform back into a text and return result
     return "".join(text_words)
 
-def correct_spelling_text(text):
+def correct_spelling_text(text)->str:
     text = l_for_i(text)
     text = o_for_0(text)
     text = words_correction(text, use_hamming=True)
     return text
 
-def correct_spelling_tables(tables):
+def correct_spelling_tables(tables)->list:
     corrected_tables = []
     for table in tables:
         table = table.rename(columns=lambda col: correct_spelling_text(col))
