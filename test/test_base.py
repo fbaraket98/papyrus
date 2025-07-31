@@ -61,7 +61,7 @@ def run_extractor_content_text_only(extractor_name):
 
     """
     papyrus_extractor = PapyrusExtractor(extractor=extractor_name)
-    text = papyrus_extractor.get_text(path, True)
+    text = papyrus_extractor.get_text(path, correct=True)
     assert isinstance(text, str), "text must be typed as str"
 
 
