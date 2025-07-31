@@ -61,7 +61,7 @@ def run_extractor_content_text_only(extractor_name):
 
     """
     papyrus_extractor = PapyrusExtractor(extractor=extractor_name)
-    text = papyrus_extractor.get_text(path)
+    text = papyrus_extractor.get_text(path, True)
     assert isinstance(text, str), "text must be typed as str"
 
 
@@ -81,7 +81,7 @@ def run_extractor_content_tables_only(extractor_name):
 
     """
     papyrus_extractor = PapyrusExtractor(extractor=extractor_name)
-    tables = papyrus_extractor.get_tables(path)
+    tables = papyrus_extractor.get_tables(path, True)
     assert isinstance(tables, list), "tables must be typed as list"
 
 
@@ -101,5 +101,5 @@ def run_extractor_content_all(extractor_name):
 
     """
     papyrus_extractor = PapyrusExtractor(extractor=extractor_name)
-    text = papyrus_extractor.get_all(path)
+    text = papyrus_extractor.get_all(path, True)
     assert isinstance(text, str), "text must be typed as str"
