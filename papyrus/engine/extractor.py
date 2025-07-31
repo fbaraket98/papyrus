@@ -12,7 +12,7 @@
 import os
 import copy
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, List
 
 
 from papyrus.tools.text_processing import text_without_tables
@@ -50,7 +50,7 @@ class DoclingExtractor(BaseExtractor):
         super().__init__()
         self.capabilities = {"text", "tables", "text_ocr", "tables_orc"}
 
-    def get_text(self, path: str, **kwargs):
+    def get_text(self, path: str, **kwargs)->str:
         format = kwargs.get("format", "raw")
         try:
             from docling.document_converter import DocumentConverter
@@ -65,7 +65,7 @@ class DoclingExtractor(BaseExtractor):
             page_text = conv_res.document.export_to_markdown()
         return page_text
 
-    def get_tables(self, path: str):
+    def get_tables(self, path: str)->List:
         try:
             from docling.document_converter import DocumentConverter
         except ImportError:
@@ -111,7 +111,7 @@ class PDFPlumberExtractor(BaseExtractor):
         super().__init__()
         self.capabilities = {"text", "tables"}
 
-    def get_text(self, path: str, **kwargs):
+    def get_text(self, path: str, **kwargs)->str:
         try:
             import pdfplumber
         except ImportError:
@@ -124,7 +124,7 @@ class PDFPlumberExtractor(BaseExtractor):
                 text += page_text.strip() + "\n\n"
         return text
 
-    def get_tables(self, path: str, **kwargs):
+    def get_tables(self, path: str, **kwargs)-> List:
         try:
             import pdfplumber
         except ImportError:
@@ -144,7 +144,7 @@ class PDFPlumberExtractor(BaseExtractor):
                         tables.append(df)
         return tables
 
-    def get_all(self, path: str, **kwargs):
+    def get_all(self, path: str, **kwargs)->str:
         try:
             import pdfplumber
             import pandas as pd
@@ -169,7 +169,7 @@ class PyMuPDFExtractor(BaseExtractor):
         self.capabilities = {"text", "tables"}
         self.output = None
 
-    def get_text(self, path: str, **kwargs):
+    def get_text(self, path: str, **kwargs)->str:
         try:
             import fitz
         except ImportError:
@@ -182,7 +182,7 @@ class PyMuPDFExtractor(BaseExtractor):
             text += page_text.strip() + "\n\n"
         return text
 
-    def get_tables(self, path: str, **kwargs):
+    def get_tables(self, path: str, **kwargs)->List:
         
         try:
             import fitz
@@ -199,7 +199,7 @@ class PyMuPDFExtractor(BaseExtractor):
                     tables.append(df)
         return tables
 
-    def get_all(self, path: str, **kwargs):
+    def get_all(self, path: str, **kwargs)->str:
         try:
             import fitz
             import pandas as pd
@@ -223,7 +223,7 @@ class PyPDF2Extractor(BaseExtractor):
         super().__init__()
         self.capabilities = {"text"}
 
-    def get_text(self, path: str, **kwargs):
+    def get_text(self, path: str, **kwargs)->str:
         try:
             import PyPDF2
         except ImportError:
@@ -247,7 +247,7 @@ class CamelotExtractor(BaseExtractor):
         super().__init__()
         self.capabilities = {"tables"}
 
-    def get_tables(self, path: str, **kwargs):
+    def get_tables(self, path: str, **kwargs)->List:
         try:
             import camelot
         except ImportError:
