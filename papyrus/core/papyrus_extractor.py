@@ -73,9 +73,8 @@ class PapyrusExtractor:
         if correct :
             from papyrus.tools import speling_correction
             text = speling_correction.correct_spelling_text(text)
-            return text
-        else:
-            return text
+        return text
+
 
     def get_tables(self, path, correct=False)->List:
         extractor = self.extractor_factory.get_processor(self.extractor, capabilities = ['tables'])
@@ -83,9 +82,7 @@ class PapyrusExtractor:
         if correct:
             from papyrus.tools import speling_correction
             tables = speling_correction.correct_spelling_tables(tables)
-            return tables
-        else:
-            return tables
+        return tables
         
     def get_all(self, path, correct=False):
         extractor = self.extractor_factory.get_processor(self.extractor, capabilities = ["text", "tables"])
@@ -93,6 +90,4 @@ class PapyrusExtractor:
         if correct:
             from papyrus.tools import speling_correction
             all_extraction = speling_correction.correct_spelling_text(all_extraction)
-            return all_extraction
-        else:
-            return all_extraction
+        return all_extraction
