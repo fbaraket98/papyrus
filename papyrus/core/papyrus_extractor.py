@@ -11,6 +11,7 @@
 
 from typing import List
 
+from papyrus.tools import spelling_correction
 from papyrus.config.config import check_config
 from papyrus.engine.extractor import (
     DoclingExtractor,
@@ -67,27 +68,27 @@ class PapyrusExtractor:
         check_config(extractor)
         self.extractor_factory = extractorfactory
 
-    def get_text(self, path, format = "raw",correct=False)->str:
+    @staticmethod
+    def _apply_correction(data, method, correct_spell):
+        if not correct_spell:
+            return data
+        if method == "get_tables":
+            return spelling_correction.correct_spelling_tables(data)
+        return spelling_correction.correct_spelling_text(data)
+
+
+    def get_text(self, path, format = "raw",correct_spell=False)->str:
         extractor = self.extractor_factory.get_processor(self.extractor, capabilities = ['text'])
         text = extractor.get_text(path, format=format)
-        if correct :
-            from papyrus.tools import speling_correction
-            text = speling_correction.correct_spelling_text(text)
-        return text
+        return self._apply_correction(text,"get_text", correct_spell)
 
 
-    def get_tables(self, path, correct=False)->List:
+    def get_tables(self, path, correct_spell=False)->List:
         extractor = self.extractor_factory.get_processor(self.extractor, capabilities = ['tables'])
         tables = extractor.get_tables(path)
-        if correct:
-            from papyrus.tools import speling_correction
-            tables = speling_correction.correct_spelling_tables(tables)
-        return tables
+        return self._apply_correction(tables, "get_tables", correct_spell)
         
-    def get_all(self, path, correct=False):
+    def get_all(self, path, correct_spell=False):
         extractor = self.extractor_factory.get_processor(self.extractor, capabilities = ["text", "tables"])
         all_extraction = extractor.get_all(path)
-        if correct:
-            from papyrus.tools import speling_correction
-            all_extraction = speling_correction.correct_spelling_text(all_extraction)
-        return all_extraction
+        return self._apply_correction(all_extraction, "get_all", correct_spell)
