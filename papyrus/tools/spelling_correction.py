@@ -3,15 +3,13 @@ import pandas as pd
 import Levenshtein
 
 
-
-def load_df_spellcheck()->pd.DataFrame:
-    """
-    Loads the dataframe used to make the spelling correction, and sort the entries by
-    number of usage according to Google statistics, from highest to lowest.
-    """
-    df = pd.read_csv( "./papyrus/tools/words_dict/linux_dict_cleaned.csv")
-    df["length"] = df["word"].str.len()
-    df = df.sort_values(by=["length", "count"], ascending=[True, False]).reset_index(drop=True)
+def load_df_spellcheck():
+    from papyrus.tools import words_dict
+    import importlib.resources as pkg_resources
+    with pkg_resources.open_text(words_dict, 'linux_dict_cleaned.csv') as f:
+        df = pd.read_csv(f)
+        df["length"] = df["word"].str.len()
+        df = df.sort_values(by=["length", "count"], ascending=[True, False]).reset_index(drop=True)
     return df
 
 
@@ -75,7 +73,7 @@ def words_correction(text: str, use_hamming: bool = False) -> str:
     # exclude long words (could be a code or technical words, that should not or cannot be corrected)
     # exclude words found in the dictionary (they do not need to be corrected)
     mask = (text_words.str.contains(r"\d|[A-Z]{1}|\W", regex=True)) | (text_words.str.len() < 5) | (
-                text_words.str.len() > MAX_LEN_SPELLCHECK) | text_words.isin(SET_SPELLCHECK_WORDS)
+            text_words.str.len() > MAX_LEN_SPELLCHECK) | text_words.isin(SET_SPELLCHECK_WORDS)
     dict_correct = {}  # dictionnary of words to correct. key: wrong spelling found in text, value: correction
     for word in text_words.loc[~mask].unique():
         lower_word = word.lower()
@@ -83,7 +81,8 @@ def words_correction(text: str, use_hamming: bool = False) -> str:
             candidates = df_spellcheck.query(f"length == {len(lower_word)}")["word"]
         else:
             candidates = \
-            df_spellcheck.query(f"length in [{len(lower_word) - 1}, {len(lower_word)}, {len(lower_word) + 1}]")["word"]
+                df_spellcheck.query(f"length in [{len(lower_word) - 1}, {len(lower_word)}, {len(lower_word) + 1}]")[
+                    "word"]
         if len(candidates) > 0:
             if use_hamming:
                 distance = candidates.apply(lambda x: Levenshtein.hamming(lower_word, x))
@@ -99,17 +98,18 @@ def words_correction(text: str, use_hamming: bool = False) -> str:
     # transform back into a text and return result
     return "".join(text_words)
 
-def correct_spelling_text(text)->str:
+
+def correct_spelling_text(text) -> str:
     text = l_for_i(text)
     text = o_for_0(text)
     text = words_correction(text, use_hamming=True)
     return text
 
-def correct_spelling_tables(tables)->list:
+
+def correct_spelling_tables(tables) -> list:
     corrected_tables = []
     for table in tables:
         table = table.rename(columns=lambda col: correct_spelling_text(col))
         table = table.map(correct_spelling_text)
         corrected_tables.append(table)
     return corrected_tables
-

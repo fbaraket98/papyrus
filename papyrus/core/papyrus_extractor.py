@@ -11,6 +11,8 @@
 
 from typing import List
 
+import pandas as pd
+
 from papyrus.tools import spelling_correction
 from papyrus.config.config import check_config
 from papyrus.engine.extractor import (
@@ -74,8 +76,10 @@ class PapyrusExtractor:
             return data
         if method == "get_tables":
             return spelling_correction.correct_spelling_tables(data)
-        return spelling_correction.correct_spelling_text(data)
-
+        elif method == 'get_text' or method=="get_all":
+            return spelling_correction.correct_spelling_text(data)
+        else:
+            raise ValueError(f"Method '{method}' is not compatible with spelling correction")
 
     def get_text(self, path, format = "raw",correct_spell=False)->str:
         extractor = self.extractor_factory.get_processor(self.extractor, capabilities = ['text'])
@@ -83,12 +87,13 @@ class PapyrusExtractor:
         return self._apply_correction(text,"get_text", correct_spell)
 
 
-    def get_tables(self, path, correct_spell=False)->List:
+    def get_tables(self, path, correct_spell=False)->List[pd.DataFrame]:
         extractor = self.extractor_factory.get_processor(self.extractor, capabilities = ['tables'])
         tables = extractor.get_tables(path)
         return self._apply_correction(tables, "get_tables", correct_spell)
         
-    def get_all(self, path, correct_spell=False):
+    def get_all(self, path, correct_spell=False)-> str:
         extractor = self.extractor_factory.get_processor(self.extractor, capabilities = ["text", "tables"])
         all_extraction = extractor.get_all(path)
         return self._apply_correction(all_extraction, "get_all", correct_spell)
+
